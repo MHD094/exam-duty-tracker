@@ -81,7 +81,7 @@ def parse_room_assignments(course_code, course_title, entry_text, date, time):
     entry_text = re.sub(r'\s+', ' ', entry_text).strip()
     
     # Method 1: Look for explicit room patterns like "308 (20)3509803-822 ZBS+MNJ"
-    room_pattern = r'(\d{3})\s*\([^)]+\)[^A-Z]*([A-Z][A-Z0-9+\s]*?)(?=\s+\d{3}\s*\(|\s+[A-Z]{2,4}-\d+|$)'
+    room_pattern = r'(\d{3})\s*\([^)]+\)[^A-Z]*([A-Z][A-Za-z0-9+\s]*?)(?=\s+\d{3}\s*\(|\s+[A-Z]{2,4}-\d+|$)'
     room_matches = re.findall(room_pattern, entry_text)
     
     for room, invig_text in room_matches:
@@ -155,8 +155,8 @@ def extract_invigilator_codes(text):
     text = re.sub(r'\d{3}', '', text)  # Remove room numbers
     text = re.sub(r'rest', '', text)  # Remove 'rest' keyword
     
-    # Extract invigilator codes - typically 2-4 letters optionally followed by a number
-    invig_pattern = r'\b([A-Z]{2,4}\d?)\b'
+    # Extract invigilator codes - allow 2-4 letters (mixed case) optionally followed by a number
+    invig_pattern = r'\b([A-Za-z]{2,4}\d{0,2})\b'
     codes = re.findall(invig_pattern, text)
     
     # Filter out codes that are too short or look like other identifiers
@@ -164,9 +164,9 @@ def extract_invigilator_codes(text):
     for code in codes:
         # Must be at least 2 characters
         if len(code) >= 2:
-            # Exclude obvious non-invigilator codes
-            if not re.match(r'^(BBA|CSE|ENG|TEX|BTE|EEE|CEN|LLB|JRN|BFT|LLM|MJR|ENF)$', code):
-                valid_codes.append(code)
+            # Exclude obvious non-invigilator codes (case-insensitive)
+            if not re.match(r'^(BBA|CSE|ENG|TEX|BTE|EEE|CEN|LLB|JRN|BFT|LLM|MJR|ENF)$', code, re.IGNORECASE):
+                valid_codes.append(code.upper())  # Normalize to uppercase for consistency
     
     return valid_codes
 
