@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Duty Tracker - Port City International University</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fefefe 0%, #f0f1f1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 40px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+            flex: 1;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107, 114, 128, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 0;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .duty-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: transform 0.2s;
+        }
+
+        .duty-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .duty-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .duty-date-time {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .duty-room {
+            background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .course-list {
+            margin: 15px 0;
+        }
+
+        .course-item {
+            background: white;
+            border-left: 4px solid #3b82f6;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .course-code {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .course-title {
+            color: #4b5563;
+            margin-top: 5px;
+        }
+
+        .other-invigilators {
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+
+        .invigilator-tag {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .debug-info {
+            background: #f1f3f4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .debug-section {
+            margin: 15px 0;
+        }
+
+        .debug-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .sample-duty {
+            background: white;
+            border-left: 3px solid #10b981;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .invigilator-codes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .code-tag {
+            background: #e6f3f3;
+            color: #065f46;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sample-codes {
+            margin-top: 10px;
+        }
+
+        .table-container {
+            margin: 20px 0;
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .duties-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+        }
+
+        .duties-table thead {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            color: white;
+        }
+
+        .duties-table th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            font-size: 16px;
+        }
+
+        .duties-table th:last-child {
+            border-right: none;
+        }
+
+        .duties-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+
+        .duties-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .duties-table tbody tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        .duties-table tbody tr:nth-child(even):hover {
+            background-color: #f1f3f4;
+        }
+
+        .duties-table td {
+            padding: 15px;
+            vertical-align: top;
+            border-right: 1px solid #e9ecef;
+            font-size: 16px;
+        }
+
+        .duties-table td:last-child {
+            border-right: none;
+        }
+
+        .date-cell {
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            min-width: 160px;
+        }
+
+        .time-cell {
+            font-weight: 700;
+            color: #4b5563;
+            white-space: nowrap;
+            min-width: 220px;
+        }
+
+        .room-cell {
+            text-align: center;
+            font-weight: 600;
+            color: #d97706;
+            background: #fef3c7;
+            min-width: 80px;
+        }
+
+        .courses-cell {
+            max-width: 320px;
+            line-height: 1.5;
+        }
+
+        .invig-cell {
+            color: #2563eb;
+            font-weight: 500;
+            min-width: 140px;
+        }
+
+        .tutorial-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .tutorial-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .tutorial-section ol {
+            list-style-type: decimal;
+            padding-left: 20px;
+            color: #4b5563;
+            font-size: 16px;
+        }
+
+        .tutorial-section li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .button-group {
+                justify-content: center;
+            }
+            
+            button {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .duty-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .duties-table {
+                font-size: 14px;
+            }
+
+            .duties-table th, .duties-table td {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .footer {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .tutorial-section {
+                padding: 15px;
+            }
+
+            .tutorial-section h3 {
+                font-size: 1.2rem;
+            }
+
+            .tutorial-section ol {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Exam Duty Tracker</h1>
+            <p>Port City International University - Find Your Examination Duties</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="tutorial-section">
+                    <h3>How to Use the Exam Duty Tracker</h3>
+                    <ol style="font-weight: bold;">
+                        <li><b>Select all text from your exam duty pdf or doc  (Ctrl + A).</b></li>
+                        <li><b>Copy the selected text (Ctrl + C).</b></li>
+                        <li><b>Paste the text into the schedule text area below (Ctrl + V).</b></li>
+                        <li><b>Then give the short form as input and then press FIND DUTIES button.</b></li>
+                    </ol>
+                </div>
+                <div class="input-group">
+                    <label for="scheduleText">Paste Exam Schedule Text:</label>
+                    <textarea 
+                        id="scheduleText" 
+                        placeholder="Paste the exam schedule text here from your PDF document...&#10;&#10;Example:&#10;Date: 12/09/2025 Friday Time: 10:00am-12:00pm (1)&#10;ENG 101 English Composition BBA-35A(70) 308 (20)3509803-822 ZBS+MNJ..."
+                    ></textarea>
+                </div>
+
+                <div class="input-row">
+                    <div class="flex-1">
+                        <label for="invigilatorCode">Invigilator Code:</label>
+                        <input 
+                            type="text" 
+                            id="invigilatorCode" 
+                            placeholder="Enter code (e.g., ZBS, MIK, MSS, CMA)"
+                            maxlength="10"
+                        >
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="searchDuties()">
+                            Find Duties
+                        </button>
+                        <button class="btn-secondary" onclick="clearAll()">
+                            Clear All
+                        </button>
+                        <button class="btn-info" onclick="debugInfo()">
+                            Debug Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing exam schedule...</p>
+            </div>
+
+            <div class="results" id="results"></div>
+        </div>
+
+        <div class="footer">
+            Developed by Md. Mahadi Rahman
+        </div>
+    </div>
+
+    <script>
+        async function searchDuties() {
+            const scheduleText = document.getElementById('scheduleText').value.trim();
+            const invigilatorCode = document.getElementById('invigilatorCode').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const loading = document.getElementById('loading');
+
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+
+            // Validation
+            if (!scheduleText) {
+                showError('Please paste the exam schedule text.');
+                return;
+            }
+
+            if (!invigilatorCode) {
+                showError('Please enter an invigilator code.');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            disableButtons(true);
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        schedule_text: scheduleText,
+                        invigilator_code: invigilatorCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error, data.sample_codes);
+                } else {
+                    showResults(data);
+                }
+            } catch (error) {
+                showError('An error occurred while processing your request: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                disableButtons(false);
+            }
+        }
+
+        async function debugInfo() {
+            const scheduleText = document.getElementById('scheduleText').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const loading = document.getElementById('loading');
+
+            if (!scheduleText) {
+                showError('Please paste the exam schedule text first.');
+                return;
+            }
+
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+            loading.style.display = 'block';
+            disableButtons(true);
+
+            try {
+                const response = await fetch('/debug', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        schedule_text: scheduleText
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showDebugResults(data);
+                }
+            } catch (error) {
+                showError('An error occurred while processing your request: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                disableButtons(false);
+            }
+        }
+
+        function showResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="success">
+                    <h3>Searching for duties of invigilator: ${data.invigilator}</h3>
+                    <p>Found ${data.total_duties} duties for ${data.invigilator}:</p>
+                </div>
+                <div class="button-group" style="margin-bottom: 20px;">
+                    <button class="btn-download" onclick="downloadPDF()">Download as PDF</button>
+                </div>
+                <div class="table-container">
+                    <table class="duties-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Room</th>
+                                <th>Courses</th>
+                                <th>Other Invigilators</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.duties.forEach(duty => {
+                const coursesText = duty.courses.map(course => 
+                    `${course.code}: ${course.title}`
+                ).join('\n');
+                
+                const otherInvigs = duty.other_invigilators.length > 0 
+                    ? duty.other_invigilators.join(', ') 
+                    : '';
+
+                html += `
+                    <tr>
+                        <td class="date-cell">${duty.date}</td>
+                        <td class="time-cell">${duty.time}</td>
+                        <td class="room-cell">${duty.room}</td>
+                        <td class="courses-cell">${coursesText.replace(/\n/g, '<br>')}</td>
+                        <td class="invig-cell">${otherInvigs}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            const table = document.querySelector('.duties-table');
+            const successDiv = document.querySelector('.success');
+            const invigilator = successDiv?.querySelector('h3')?.textContent.replace('Searching for duties of invigilator: ', '') || 'Unknown';
+            const totalDuties = successDiv?.querySelector('p')?.textContent || 'No duties found';
+
+            // Add title and metadata
+            doc.setFontSize(18);
+            doc.text('Exam Duty Tracker - Port City International University', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Duties for ${invigilator}`, 20, 30);
+            doc.text(totalDuties, 20, 40);
+
+            try {
+                // Capture table with higher resolution
+                const canvas = await html2canvas(table, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                });
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth() - 40;
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                // Ensure table fits within page
+                let yPosition = 50;
+                const pageHeight = doc.internal.pageSize.getHeight();
+                if (yPosition + pdfHeight > pageHeight - 20) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+
+                // Add table image to PDF
+                doc.addImage(imgData, 'PNG', 20, yPosition, pdfWidth, pdfHeight);
+
+                // Save the PDF
+                doc.save(`Exam_Duties_${invigilator}.pdf`);
+            } catch (error) {
+                showError('Failed to generate PDF: ' + error.message);
+            }
+        }
+
+        function showDebugResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="debug-info">
+                    <h3>🔍 Debug Information</h3>
+                    
+                    <div class="debug-section">
+                        <div class="debug-title">Parsing Summary:</div>
+                        <p>• Total duties parsed: <strong>${data.total_duties}</strong></p>
+                        <p>• Total unique invigilators: <strong>${data.total_invigilators}</strong></p>
+                    </div>
+            `;
+
+            if (data.sample_duties && data.sample_duties.length > 0) {
+                html += `
+                    <div class="debug-section">
+                        <div class="debug-title">Sample Duties (First 5):</div>
+                        ${data.sample_duties.map((duty, index) => `
+                            <div class="sample-duty">
+                                <strong>${index + 1}. ${duty.date} at ${duty.time}</strong><br>
+                                Course: ${duty.course} - ${duty.title}<br>
+                                Room: ${duty.room}<br>
+                                Invigilators: ${duty.invigilators.join(', ') || 'None'}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (data.all_invigilators && data.all_invigilators.length > 0) {
+                html += `
+                    <div class="debug-section">
+                        <div class="debug-title">All Invigilator Codes Found:</div>
+                        <div class="invigilator-codes">
+                            ${data.all_invigilators.map(code => `<span class="code-tag">${code}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            resultsDiv.innerHTML = html;
+        }
+
+        function showError(message, sampleCodes = null) {
+            const resultsDiv = document.getElementById('results');
+            let html = `<div class="error">❌ ${message}</div>`;
+            
+            if (sampleCodes && sampleCodes.length > 0) {
+                html += `
+                    <div class="sample-codes">
+                        <h4>Sample invigilator codes found:</h4>
+                        <div class="invigilator-codes">
+                            ${sampleCodes.map(code => `<span class="code-tag">${code}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearAll() {
+            document.getElementById('scheduleText').value = '';
+            document.getElementById('invigilatorCode').value = '';
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function disableButtons(disabled) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = disabled);
+        }
+
+        // Enter key support for invigilator input
+        document.getElementById('invigilatorCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDuties();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('scheduleText').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(300, this.scrollHeight) + 'px';
+        });
+    </script>
+</body>
+</html>
