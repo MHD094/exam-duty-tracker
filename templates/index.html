@@ -275,28 +275,6 @@
             font-weight: 600;
         }
 
-        .course-list {
-            margin: 15px 0;
-        }
-
-        .course-item {
-            background: white;
-            border-left: 4px solid #3b82f6;
-            padding: 10px 15px;
-            margin: 8px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .course-code {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .course-title {
-            color: #4b5563;
-            margin-top: 5px;
-        }
-
         .other-invigilators {
             background: #eff6ff;
             border-radius: 8px;
@@ -441,11 +419,6 @@
             color: #d97706;
             background: #fef3c7;
             min-width: 80px;
-        }
-
-        .courses-cell {
-            max-width: 320px;
-            line-height: 1.5;
         }
 
         .invig-cell {
@@ -712,7 +685,6 @@
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Room</th>
-                                <th>Courses</th>
                                 <th>Other Invigilators</th>
                             </tr>
                         </thead>
@@ -720,10 +692,6 @@
             `;
 
             data.duties.forEach(duty => {
-                const coursesText = duty.courses.map(course => 
-                    `${course.code}: ${course.title}`
-                ).join('\n');
-                
                 const otherInvigs = duty.other_invigilators.length > 0 
                     ? duty.other_invigilators.join(', ') 
                     : '';
@@ -733,7 +701,6 @@
                         <td class="date-cell">${duty.date}</td>
                         <td class="time-cell">${duty.time}</td>
                         <td class="room-cell">${duty.room}</td>
-                        <td class="courses-cell">${coursesText.replace(/\n/g, '<br>')}</td>
                         <td class="invig-cell">${otherInvigs}</td>
                     </tr>
                 `;
