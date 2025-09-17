@@ -38,7 +38,7 @@ def parse_schedule(text):
             course_code = course_match.group(1).strip()
             remaining_text = course_match.group(2).strip()
             
-            # Extract course title (everything before the first program code)
+            # Extract course title (keeping for parsing, but not using in results)
             title_match = re.search(r'^(.*?)(?:\s+[A-Z]{2,4}-\d+|\s+\d{3}\s*\()', remaining_text)
             course_title = title_match.group(1).strip() if title_match else remaining_text.split()[0] if remaining_text else "Unknown"
             
@@ -181,10 +181,6 @@ def find_invigilator_duties(duties, code):
                 break
     return matching_duties
 
-def get_room_courses(duties, date, time, room):
-    """Get all courses scheduled in the same room at the same time."""
-    return [d for d in duties if d["date"] == date and d["time"] == time and d["room"] == room]
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -223,19 +219,9 @@ def search_duties():
                 'sample_codes': sample_codes
             })
         
-        # Format the results
+        # Format the results without courses
         results = []
         for duty in invig_duties:
-            room_courses = get_room_courses(duties, duty["date"], duty["time"], duty["room"])
-            
-            # Get course information for this room
-            courses = []
-            for c in room_courses:
-                courses.append({
-                    'code': c['course'],
-                    'title': c['title']
-                })
-            
             # Get other invigilators
             others = [x for x in duty["invigilators"] if x.upper() != invigilator_code]
             
@@ -243,7 +229,6 @@ def search_duties():
                 'date': duty['date'],
                 'time': duty['time'],
                 'room': duty['room'],
-                'courses': courses,
                 'other_invigilators': others
             })
         
